@@ -1,0 +1,102 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using {{YourNamespace}}.Models; // Assuming YourNamespace.Models contains your entity models
+
+namespace {{YourNamespace}}.Controllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class {{ControllerName}}Controller : ControllerBase
+{
+    private readonly {{DbContextName}} _context;
+
+    public {{ControllerName}}Controller({{DbContextName}} context)
+    {
+        _context = context;
+    }
+
+    // GET: api/{{ControllerName}}
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<{{ModelName}}>>> Get{{ModelName}}()
+    {
+        return await _context.{{ModelName}}.ToListAsync();
+    }
+
+    // GET: api/{{ControllerName}}/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<{{ModelName}}>> Get{{ModelName}}(int id)
+    {
+        var {{ModelName|ToLower}} = await _context.{{ModelName}}.FindAsync(id);
+
+        if ({{ModelName|ToLower}} == null)
+        {
+            return NotFound();
+        }
+
+        return {{ModelName|ToLower}};
+    }
+
+    // POST: api/{{ControllerName}}
+    [HttpPost]
+    public async Task<ActionResult<{{ModelName}}>> Post{{ModelName}}({{ModelName}} {{ModelName|ToLower}})
+    {
+        _context.{{ModelName}}.Add({{ModelName|ToLower}});
+        await _context.SaveChangesAsync();
+
+        return CreatedAtAction(nameof(Get{{ModelName}}), new { id = {{ModelName|ToLower}}.Id }, {{ModelName|ToLower}});
+    }
+
+    // PUT: api/{{ControllerName}}/5
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Put{{ModelName}}(int id, {{ModelName}} {{ModelName|ToLower}})
+    {
+        if (id != {{ModelName|ToLower}}.Id)
+        {
+            return BadRequest();
+        }
+
+        _context.Entry({{ModelName|ToLower}}).State = EntityState.Modified;
+
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!{{ModelName}}Exists(id))
+            {
+                return NotFound();
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        return NoContent();
+    }
+
+    // DELETE: api/{{ControllerName}}/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete{{ModelName}}(int id)
+    {
+        var {{ModelName|ToLower}} = await _context.{{ModelName}}.FindAsync(id);
+        if ({{ModelName|ToLower}} is null)
+        {
+            return NotFound();
+        }
+
+        _context.{{ModelName}}.Remove({{ModelName|ToLower}});
+        await _context.SaveChangesAsync();
+
+        return NoContent();
+    }
+
+    private bool {{ModelName}}Exists(int id)
+    {
+        return _context.{{ModelName}}.Any(e => e.Id == id);
+    }
+}
